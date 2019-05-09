@@ -1,0 +1,12 @@
+Source: ros-dashing-robot-state-publisher
+Section: misc
+Priority: extra
+Maintainer: Karsten Knese <karsten@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-dashing-ament-cmake, ros-dashing-ament-lint-auto, ros-dashing-ament-lint-common, ros-dashing-geometry-msgs, ros-dashing-kdl-parser, ros-dashing-orocos-kdl, ros-dashing-rclcpp, ros-dashing-sensor-msgs, ros-dashing-tf2-ros, ros-dashing-urdf, ros-dashing-urdfdom-headers, ros-dashing-ros-workspace
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-dashing-robot-state-publisher
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-dashing-geometry-msgs, ros-dashing-kdl-parser, ros-dashing-orocos-kdl, ros-dashing-rclcpp, ros-dashing-sensor-msgs, ros-dashing-tf2-ros, ros-dashing-urdf, ros-dashing-urdfdom-headers, ros-dashing-ros-workspace
+Description: ROS2 version of the robot_state_publisher package
