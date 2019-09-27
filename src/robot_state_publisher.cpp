@@ -76,7 +76,6 @@ RobotStatePublisher::RobotStatePublisher(
 : model_(model),
   tf_broadcaster_(node_handle),
   static_tf_broadcaster_(node_handle),
-  description_published_(false),
   clock_(node_handle->get_clock())
 {
   // walk the tree and add segments to segments_
@@ -88,6 +87,9 @@ RobotStatePublisher::RobotStatePublisher(
     "robot_description",
     // Transient local is similar to latching in ROS 1.
     rclcpp::QoS(1).transient_local());
+
+  // Publish the robot description
+  description_pub_->publish(model_xml_);
 }
 
 // add children to correct maps
@@ -143,12 +145,6 @@ void RobotStatePublisher::publishTransforms(
     }
   }
   tf_broadcaster_.sendTransform(tf_transforms);
-
-  // Publish the robot description, as necessary
-  if (!description_published_) {
-    description_pub_->publish(model_xml_);
-    description_published_ = true;
-  }
 }
 
 // publish fixed transforms
