@@ -1,0 +1,12 @@
+Source: ros-eloquent-robot-state-publisher
+Section: misc
+Priority: optional
+Maintainer: Karsten Knese <karsten@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-eloquent-ament-cmake, ros-eloquent-ament-lint-auto, ros-eloquent-ament-lint-common, ros-eloquent-geometry-msgs, ros-eloquent-kdl-parser, ros-eloquent-orocos-kdl, ros-eloquent-rclcpp, ros-eloquent-sensor-msgs, ros-eloquent-tf2-ros, ros-eloquent-urdf, ros-eloquent-urdfdom-headers, ros-eloquent-ros-workspace
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-eloquent-robot-state-publisher
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-eloquent-geometry-msgs, ros-eloquent-kdl-parser, ros-eloquent-orocos-kdl, ros-eloquent-rclcpp, ros-eloquent-sensor-msgs, ros-eloquent-tf2-ros, ros-eloquent-urdf, ros-eloquent-urdfdom-headers, ros-eloquent-ros-workspace
+Description: ROS2 version of the robot_state_publisher package
