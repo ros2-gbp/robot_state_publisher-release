@@ -1,3 +1,26 @@
+## robot_state_publisher (eloquent) - 2.3.1-1
+
+The packages in the `robot_state_publisher` repository were released into the `eloquent` distro by running `/usr/bin/bloom-release -r eloquent robot_state_publisher` on `Thu, 24 Oct 2019 00:21:04 -0000`
+
+The `robot_state_publisher` package was released.
+
+Version of package(s) in repository `robot_state_publisher`:
+
+- upstream repository: https://github.com/ros/robot_state_publisher.git
+- release repository: https://github.com/ros2-gbp/robot_state_publisher-release.git
+- rosdistro version: `2.3.0-1`
+- old version: `2.3.0-3`
+- new version: `2.3.1-1`
+
+Versions of tools used:
+
+- bloom version: `0.9.0`
+- catkin_pkg version: `0.4.14`
+- rosdep version: `0.17.1`
+- rosdistro version: `0.7.5`
+- vcstools version: `0.1.42`
+
+
 ## robot_state_publisher (eloquent) - 2.3.0-3
 
 The packages in the `robot_state_publisher` repository were released into the `eloquent` distro by running `/usr/bin/bloom-release -r eloquent robot_state_publisher` on `Thu, 24 Oct 2019 00:06:47 -0000`
