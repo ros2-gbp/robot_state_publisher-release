@@ -118,7 +118,7 @@ tracks:
     release_tag: :{version}
     ros_distro: eloquent
     vcs_type: git
-    vcs_uri: https://github.com/ros2/robot_state_publisher.git
+    vcs_uri: https://github.com/ros/robot_state_publisher.git
     version: :{auto}
   r2b2:
     actions:
