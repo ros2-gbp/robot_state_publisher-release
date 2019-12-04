@@ -1,1 +1,1 @@
-{"base": "8b6b2c2", "parent": "debian/dashing/robot_state_publisher", "previous": "506bc28", "trim": "", "trimbase": ""}
+{"trim": "", "base": "61ea2d0", "trimbase": "", "parent": "debian/dashing/robot_state_publisher", "previous": "e35a9d1"}
