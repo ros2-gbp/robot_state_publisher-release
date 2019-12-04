@@ -76,9 +76,6 @@ install(
   RUNTIME DESTINATION bin
 )
 
-install(DIRECTORY include/
-  DESTINATION include)
-
 install(
   TARGETS ${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME}
