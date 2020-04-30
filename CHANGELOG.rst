@@ -2,10 +2,11 @@
 Changelog for package robot_state_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2.2.5 (2019-12-04)
+2.3.0 (2019-09-26)
 ------------------
-* Publish description right away (`#124 <https://github.com/ros/robot_state_publisher/issues/124>`_)
-* Contributors: Shane Loretz
+* Install include directories (`#31 <https://github.com/ros2/robot_state_publisher/issues/31>`_)
+* Publish URDF string on startup (`#24 <https://github.com/ros2/robot_state_publisher/issues/24>`_)
+* Contributors: Patrick Beeson, Poh Zhi-Ee, Shane Loretz
 
 2.2.4 (2019-09-06)
 ------------------
