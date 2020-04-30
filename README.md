@@ -1,3 +1,26 @@
+## robot_state_publisher (foxy) - 2.4.0-1
+
+The packages in the `robot_state_publisher` repository were released into the `foxy` distro by running `/usr/bin/bloom-release --rosdistro foxy --track foxy robot_state_publisher -e` on `Thu, 30 Apr 2020 18:48:48 -0000`
+
+The `robot_state_publisher` package was released.
+
+Version of package(s) in repository `robot_state_publisher`:
+
+- upstream repository: https://github.com/ros/robot_state_publisher.git
+- release repository: unknown
+- rosdistro version: `null`
+- old version: `2.3.0-1`
+- new version: `2.4.0-1`
+
+Versions of tools used:
+
+- bloom version: `0.9.4`
+- catkin_pkg version: `0.4.17`
+- rosdep version: `0.19.0`
+- rosdistro version: `0.8.1`
+- vcstools version: `0.1.42`
+
+
 ## robot_state_publisher (dashing) - 2.2.5-1
 
 The packages in the `robot_state_publisher` repository were released into the `dashing` distro by running `/usr/bin/bloom-release --ros-distro dashing --track dashing robot_state_publisher` on `Wed, 04 Dec 2019 14:51:59 -0000`
