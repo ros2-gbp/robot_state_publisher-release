@@ -1,0 +1,13 @@
+Source: ros-rolling-robot-state-publisher
+Section: misc
+Priority: optional
+Maintainer: Karsten Knese <karsten@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-rolling-ament-cmake, ros-rolling-ament-cmake-gtest, ros-rolling-ament-lint-auto, ros-rolling-ament-lint-common, ros-rolling-builtin-interfaces, ros-rolling-geometry-msgs, ros-rolling-kdl-parser, ros-rolling-launch-ros, ros-rolling-launch-testing-ament-cmake, ros-rolling-orocos-kdl, ros-rolling-rclcpp, ros-rolling-rclcpp-components, ros-rolling-sensor-msgs, ros-rolling-std-msgs, ros-rolling-tf2-ros, ros-rolling-urdf, ros-rolling-urdfdom-headers, ros-rolling-ros-workspace
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-rolling-robot-state-publisher
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-rolling-builtin-interfaces, ros-rolling-geometry-msgs, ros-rolling-kdl-parser, ros-rolling-orocos-kdl, ros-rolling-rclcpp, ros-rolling-rclcpp-components, ros-rolling-sensor-msgs, ros-rolling-std-msgs, ros-rolling-tf2-ros, ros-rolling-urdf, ros-rolling-urdfdom-headers, ros-rolling-ros-workspace
+Description: This package allows you to publish the state of a robot to tf2.
+ Once the state gets published, it is available to all components in the system that also use tf2. The package takes the joint angles of the robot as input and publishes the 3D poses of the robot links, using a kinematic tree model of the robot.
