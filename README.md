@@ -1,3 +1,26 @@
+## robot_state_publisher (foxy) - 2.4.1-1
+
+The packages in the `robot_state_publisher` repository were released into the `foxy` distro by running `/usr/bin/bloom-release --track foxy --rosdistro foxy robot_state_publisher` on `Mon, 28 Sep 2020 12:25:42 -0000`
+
+The `robot_state_publisher` package was released.
+
+Version of package(s) in repository `robot_state_publisher`:
+
+- upstream repository: https://github.com/ros/robot_state_publisher.git
+- release repository: https://github.com/ros2-gbp/robot_state_publisher-release.git
+- rosdistro version: `2.4.0-1`
+- old version: `2.4.0-1`
+- new version: `2.4.1-1`
+
+Versions of tools used:
+
+- bloom version: `0.9.8`
+- catkin_pkg version: `0.4.22`
+- rosdep version: `0.19.0`
+- rosdistro version: `0.8.2`
+- vcstools version: `0.1.42`
+
+
 ## robot_state_publisher (rolling) - 2.4.1-1
 
 The packages in the `robot_state_publisher` repository were released into the `rolling` distro by running `/usr/bin/bloom-release --track rolling --rosdistro rolling robot_state_publisher` on `Mon, 28 Sep 2020 12:22:18 -0000`
