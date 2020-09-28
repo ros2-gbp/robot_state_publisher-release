@@ -98,6 +98,8 @@ RobotStatePublisher::RobotStatePublisher(const rclcpp::NodeOptions & options)
           in.seekg(0, std::ios::beg);
           in.read(&urdf_xml[0], urdf_xml.size());
           in.close();
+
+          this->set_parameter(rclcpp::Parameter("robot_description", urdf_xml));
         } else {
           throw std::system_error(
                   errno,
@@ -173,14 +175,14 @@ void RobotStatePublisher::setupURDF(const std::string & urdf_xml)
 
   // Initialize the mimic map
   mimic_.clear();
-  for (const std::pair<std::string, urdf::JointSharedPtr> & i : model_->joints_) {
+  for (const std::pair<const std::string, urdf::JointSharedPtr> & i : model_->joints_) {
     if (i.second->mimic) {
       mimic_.insert(std::make_pair(i.first, i.second->mimic));
     }
   }
 
   KDL::SegmentMap segments_map = tree.getSegments();
-  for (const std::pair<std::string, KDL::TreeElement> & segment : segments_map) {
+  for (const std::pair<const std::string, KDL::TreeElement> & segment : segments_map) {
     RCLCPP_INFO(get_logger(), "got segment %s", segment.first.c_str());
   }
 
@@ -237,7 +239,7 @@ void RobotStatePublisher::publishTransforms(
   std::vector<geometry_msgs::msg::TransformStamped> tf_transforms;
 
   // loop over all joints
-  for (const std::pair<std::string, double> & jnt : joint_positions) {
+  for (const std::pair<const std::string, double> & jnt : joint_positions) {
     std::map<std::string, SegmentPair>::iterator seg = segments_.find(jnt.first);
     if (seg != segments_.end()) {
       geometry_msgs::msg::TransformStamped tf_transform =
@@ -258,7 +260,7 @@ void RobotStatePublisher::publishFixedTransforms()
   std::vector<geometry_msgs::msg::TransformStamped> tf_transforms;
 
   // loop over all fixed segments
-  for (const std::pair<std::string, SegmentPair> & seg : segments_fixed_) {
+  for (const std::pair<const std::string, SegmentPair> & seg : segments_fixed_) {
     geometry_msgs::msg::TransformStamped tf_transform = kdlToTransform(seg.second.segment.pose(0));
     rclcpp::Time now = this->now();
     if (!use_tf_static_) {
@@ -319,7 +321,7 @@ void RobotStatePublisher::callbackJointState(const sensor_msgs::msg::JointState:
       joint_positions.insert(std::make_pair(state->name[i], state->position[i]));
     }
 
-    for (const std::pair<std::string, urdf::JointMimicSharedPtr> & i : mimic_) {
+    for (const std::pair<const std::string, urdf::JointMimicSharedPtr> & i : mimic_) {
       if (joint_positions.find(i.second->joint_name) != joint_positions.end()) {
         double pos = joint_positions[i.second->joint_name] * i.second->multiplier +
           i.second->offset;
@@ -360,7 +362,14 @@ rcl_interfaces::msg::SetParametersResult RobotStatePublisher::parameterUpdate(
         break;
       }
 
-      setupURDF(new_urdf);
+      try {
+        setupURDF(new_urdf);
+      } catch (const std::runtime_error & err) {
+        RCLCPP_WARN(get_logger(), "%s", err.what());
+        result.successful = false;
+        result.reason = err.what();
+        break;
+      }
     } else if (parameter.get_name() == "use_tf_static") {
       if (parameter.get_type() != rclcpp::ParameterType::PARAMETER_BOOL) {
         result.successful = false;
