@@ -2,22 +2,18 @@
 Changelog for package robot_state_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2.7.0 (2021-10-18)
+2.5.2 (2021-11-30)
 ------------------
-* Fix deprecated subscriber callbacks (`#173 <https://github.com/ros/robot_state_publisher/issues/173>`_)
-* Contributors: Abrar Rahman Protyasha
+* Prevent robot_state_publisher from publishing on a timer (`#175 <https://github.com/ros/robot_state_publisher/issues/175>`_)
+* Contributors: Daisuke Nishimatsu
 
-2.6.0 (2021-08-02)
+2.5.1 (2021-08-04)
 ------------------
-* Cleanup the documentation in the RobotStatePublisher class. (`#172 <https://github.com/ros/robot_state_publisher/issues/172>`_)
-* Always publish fixed frames to /tf_static (`#158 <https://github.com/ros/robot_state_publisher/issues/158>`_)
-* corrected publish_frequency default in README (`#166 <https://github.com/ros/robot_state_publisher/issues/166>`_)
-* Contributors: Chris Lalancette, Jacob Perron, Nils Schulte
 
-2.5.0 (2021-06-11)
+2.4.4 (2021-08-02)
 ------------------
-* Add tf frame_prefix parameter (`#159 <https://github.com/ros/robot_state_publisher/issues/159>`_)
-* Contributors: Steve Nogar, Chris Lalancette
+* Restore tf frame prefix support for ROS 2 (`#159 <https://github.com/ros/robot_state_publisher/issues/159>`_) (`#171 <https://github.com/ros/robot_state_publisher/issues/171>`_)
+* Contributors: Chris Lalancette
 
 2.4.3 (2021-04-19)
 ------------------
