@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>robot_state_publisher</name>
-  <version>2.7.0</version>
+  <version>3.0.0</version>
   <description>
     This package take the joint angles of a robot as input, and publishes the 3D poses of the robot links to tf2, using a kinematic tree model of the robot.
   </description>
@@ -17,25 +17,25 @@
   <build_depend>geometry_msgs</build_depend>
   <build_depend>kdl_parser</build_depend>
   <build_depend>orocos_kdl</build_depend>
+  <build_depend>rcl_interfaces</build_depend>
   <build_depend>rclcpp</build_depend>
   <build_depend>rclcpp_components</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>tf2_ros</build_depend>
   <build_depend>urdf</build_depend>
-  <build_depend>urdfdom_headers</build_depend>
 
   <exec_depend>builtin_interfaces</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>kdl_parser</exec_depend>
   <exec_depend>orocos_kdl</exec_depend>
+  <exec_depend>rcl_interfaces</exec_depend>
   <exec_depend>rclcpp</exec_depend>
   <exec_depend>rclcpp_components</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
   <exec_depend>urdf</exec_depend>
-  <exec_depend>urdfdom_headers</exec_depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
   <test_depend>ament_lint_auto</test_depend>
