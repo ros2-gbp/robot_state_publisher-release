@@ -245,4 +245,5 @@ tracks:
     ros_distro: rolling
     vcs_type: git
     vcs_uri: https://github.com/ros/robot_state_publisher.git
-    version: :{auto}
+    version: 3.0.0
+    version_saved: :{auto}
