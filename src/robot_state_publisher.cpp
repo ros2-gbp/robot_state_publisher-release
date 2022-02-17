@@ -30,7 +30,18 @@
 
 #include "robot_state_publisher/robot_state_publisher.hpp"
 
+#include <builtin_interfaces/msg/time.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
+#include <kdl/tree.hpp>
+#include <kdl_parser/kdl_parser.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp_components/register_node_macro.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
+#include <std_msgs/msg/string.hpp>
+#include <urdf/model.h>
+
 #include <chrono>
+#include <cstring>
 #include <fstream>
 #include <functional>
 #include <map>
@@ -39,19 +50,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "builtin_interfaces/msg/time.hpp"
-#include "geometry_msgs/msg/transform_stamped.hpp"
-#include "kdl/tree.hpp"
-#include "kdl_parser/kdl_parser.hpp"
-#include "rcl_interfaces/msg/parameter_event.hpp"
-#include "rcl_interfaces/msg/set_parameters_result.hpp"
-#include "rclcpp/parameter_events_filter.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp_components/register_node_macro.hpp"
-#include "sensor_msgs/msg/joint_state.hpp"
-#include "std_msgs/msg/string.hpp"
-#include "urdf/model.h"
 
 namespace robot_state_publisher
 {
@@ -119,12 +117,20 @@ RobotStatePublisher::RobotStatePublisher(const rclcpp::NodeOptions & options)
   if (publish_freq < 0.0 || publish_freq > 1000.0) {
     throw std::runtime_error("publish_frequency must be between 0 and 1000");
   }
+  publish_interval_ms_ =
+    std::chrono::milliseconds(static_cast<uint64_t>(1000.0 / publish_freq));
+
+  // set whether to use the /tf_static latched static transform broadcaster
+  use_tf_static_ = this->declare_parameter("use_tf_static", true);
+  if (!use_tf_static_) {
+    RCLCPP_WARN(get_logger(), "use_tf_static is deprecated and will be removed in the future");
+  }
 
   // set frame_prefix
   this->declare_parameter("frame_prefix", "");
 
   // ignore_timestamp_ == true, joint_state messages are accepted, no matter their timestamp
-  this->declare_parameter("ignore_timestamp", false);
+  ignore_timestamp_ = this->declare_parameter("ignore_timestamp", false);
 
   tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(this);
   static_tf_broadcaster_ = std::make_unique<tf2_ros::StaticTransformBroadcaster>(this);
@@ -136,55 +142,44 @@ RobotStatePublisher::RobotStatePublisher(const rclcpp::NodeOptions & options)
 
   setupURDF(urdf_xml);
 
-  auto subscriber_options = rclcpp::SubscriptionOptions();
-  subscriber_options.qos_overriding_options =
-    rclcpp::QosOverridingOptions::with_default_policies();
-
   // subscribe to joint state
   joint_state_sub_ = this->create_subscription<sensor_msgs::msg::JointState>(
-    "joint_states",
-    rclcpp::SensorDataQoS(),
-    std::bind(&RobotStatePublisher::callbackJointState, this, std::placeholders::_1),
-    subscriber_options);
+    "joint_states", 10, std::bind(
+      &RobotStatePublisher::callbackJointState, this,
+      std::placeholders::_1));
 
-  publishFixedTransforms();
+  // trigger to publish fixed joints
+  if (use_tf_static_) {
+    publishFixedTransforms();
+  } else {
+    timer_ = this->create_wall_timer(
+      publish_interval_ms_, std::bind(&RobotStatePublisher::publishFixedTransforms, this));
+  }
 
   // Now that we have successfully declared the parameters and done all
   // necessary setup, install the callback for updating parameters.
   param_cb_ = add_on_set_parameters_callback(
     std::bind(&RobotStatePublisher::parameterUpdate, this, std::placeholders::_1));
-
-  // Now that we have successfully declared the parameters and done all
-  // necessary setup, install the callback for updating parameters.
-  parameter_subscription_ = rclcpp::AsyncParametersClient::on_parameter_event(
-    this->get_node_topics_interface(),
-    std::bind(&RobotStatePublisher::onParameterEvent, this, std::placeholders::_1));
 }
 
-KDL::Tree RobotStatePublisher::parseURDF(const std::string & urdf_xml, urdf::Model & model)
+void RobotStatePublisher::setupURDF(const std::string & urdf_xml)
 {
+  model_ = std::make_unique<urdf::Model>();
+
   // Initialize the model
-  if (!model.initString(urdf_xml)) {
+  if (!model_->initString(urdf_xml)) {
     throw std::runtime_error("Unable to initialize urdf::model from robot description");
   }
 
   // Initialize the KDL tree
   KDL::Tree tree;
-  if (!kdl_parser::treeFromUrdfModel(model, tree)) {
+  if (!kdl_parser::treeFromUrdfModel(*model_, tree)) {
     throw std::runtime_error("Failed to extract kdl tree from robot description");
   }
 
-  return tree;
-}
-
-void RobotStatePublisher::setupURDF(const std::string & urdf_xml)
-{
-  urdf::Model model;
-  KDL::Tree tree = parseURDF(urdf_xml, model);
-
   // Initialize the mimic map
   mimic_.clear();
-  for (const std::pair<const std::string, urdf::JointSharedPtr> & i : model.joints_) {
+  for (const std::pair<const std::string, urdf::JointSharedPtr> & i : model_->joints_) {
     if (i.second->mimic) {
       mimic_.insert(std::make_pair(i.first, i.second->mimic));
     }
@@ -198,7 +193,7 @@ void RobotStatePublisher::setupURDF(const std::string & urdf_xml)
   // walk the tree and add segments to segments_
   segments_.clear();
   segments_fixed_.clear();
-  addChildren(model, tree.getRootSegment());
+  addChildren(tree.getRootSegment());
 
   auto msg = std::make_unique<std_msgs::msg::String>();
   msg->data = urdf_xml;
@@ -208,9 +203,7 @@ void RobotStatePublisher::setupURDF(const std::string & urdf_xml)
 }
 
 // add children to correct maps
-void RobotStatePublisher::addChildren(
-  const urdf::Model & model,
-  const KDL::SegmentMap::const_iterator segment)
+void RobotStatePublisher::addChildren(const KDL::SegmentMap::const_iterator segment)
 {
   const std::string & root = GetTreeElementSegment(segment->second).getName();
 
@@ -219,8 +212,8 @@ void RobotStatePublisher::addChildren(
     const KDL::Segment & child = GetTreeElementSegment(children[i]->second);
     SegmentPair s(GetTreeElementSegment(children[i]->second), root, child.getName());
     if (child.getJoint().getType() == KDL::Joint::None) {
-      if (model.getJoint(child.getJoint().getName()) &&
-        model.getJoint(child.getJoint().getName())->type == urdf::Joint::FLOATING)
+      if (model_->getJoint(child.getJoint().getName()) &&
+        model_->getJoint(child.getJoint().getName())->type == urdf::Joint::FLOATING)
       {
         RCLCPP_INFO(
           get_logger(), "Floating joint. Not adding segment from %s to %s.",
@@ -237,7 +230,7 @@ void RobotStatePublisher::addChildren(
         get_logger(), "Adding moving segment from %s to %s", root.c_str(),
         child.getName().c_str());
     }
-    addChildren(model, children[i]);
+    addChildren(children[i]);
   }
 }
 
@@ -247,9 +240,6 @@ void RobotStatePublisher::publishTransforms(
   const builtin_interfaces::msg::Time & time)
 {
   RCLCPP_DEBUG(get_logger(), "Publishing transforms for moving joints");
-
-  std::string frame_prefix = get_parameter("frame_prefix").get_value<std::string>();
-
   std::vector<geometry_msgs::msg::TransformStamped> tf_transforms;
 
   // loop over all joints
@@ -259,8 +249,10 @@ void RobotStatePublisher::publishTransforms(
       geometry_msgs::msg::TransformStamped tf_transform =
         kdlToTransform(seg->second.segment.pose(jnt.second));
       tf_transform.header.stamp = time;
-      tf_transform.header.frame_id = frame_prefix + seg->second.root;
-      tf_transform.child_frame_id = frame_prefix + seg->second.tip;
+      tf_transform.header.frame_id = this->get_parameter("frame_prefix").as_string() +
+        seg->second.root;
+      tf_transform.child_frame_id = this->get_parameter("frame_prefix").as_string() +
+        seg->second.tip;
       tf_transforms.push_back(tf_transform);
     }
   }
@@ -271,26 +263,31 @@ void RobotStatePublisher::publishTransforms(
 void RobotStatePublisher::publishFixedTransforms()
 {
   RCLCPP_DEBUG(get_logger(), "Publishing transforms for fixed joints");
-
-  std::string frame_prefix = get_parameter("frame_prefix").get_value<std::string>();
-
   std::vector<geometry_msgs::msg::TransformStamped> tf_transforms;
 
   // loop over all fixed segments
-  rclcpp::Time now = this->now();
   for (const std::pair<const std::string, SegmentPair> & seg : segments_fixed_) {
     geometry_msgs::msg::TransformStamped tf_transform = kdlToTransform(seg.second.segment.pose(0));
+    rclcpp::Time now = this->now();
+    if (!use_tf_static_) {
+      now = now + rclcpp::Duration(std::chrono::milliseconds(500));
+    }
     tf_transform.header.stamp = now;
 
-    tf_transform.header.frame_id = frame_prefix + seg.second.root;
-    tf_transform.child_frame_id = frame_prefix + seg.second.tip;
+    tf_transform.header.frame_id = this->get_parameter("frame_prefix").as_string() +
+      seg.second.root;
+    tf_transform.child_frame_id = this->get_parameter("frame_prefix").as_string() +
+      seg.second.tip;
     tf_transforms.push_back(tf_transform);
   }
-  static_tf_broadcaster_->sendTransform(tf_transforms);
+  if (use_tf_static_) {
+    static_tf_broadcaster_->sendTransform(tf_transforms);
+  } else {
+    tf_broadcaster_->sendTransform(tf_transforms);
+  }
 }
 
-void RobotStatePublisher::callbackJointState(
-  const sensor_msgs::msg::JointState::ConstSharedPtr state)
+void RobotStatePublisher::callbackJointState(const sensor_msgs::msg::JointState::SharedPtr state)
 {
   if (state->name.size() != state->position.size()) {
     if (state->position.empty()) {
@@ -324,13 +321,8 @@ void RobotStatePublisher::callbackJointState(
 
   // check if we need to publish
   rclcpp::Time current_time(state->header.stamp);
-  double publish_freq = this->get_parameter("publish_frequency").get_value<double>();
-  std::chrono::milliseconds publish_interval_ms =
-    std::chrono::milliseconds(static_cast<uint64_t>(1000.0 / publish_freq));
-  rclcpp::Time max_publish_time = last_published + rclcpp::Duration(publish_interval_ms);
-  if (get_parameter("ignore_timestamp").get_value<bool>() ||
-    current_time.nanoseconds() >= max_publish_time.nanoseconds())
-  {
+  rclcpp::Time max_publish_time = last_published + rclcpp::Duration(publish_interval_ms_);
+  if (ignore_timestamp_ || current_time.nanoseconds() >= max_publish_time.nanoseconds()) {
     // get joint positions from state message
     std::map<std::string, double> joint_positions;
     for (size_t i = 0; i < state->name.size(); i++) {
@@ -362,60 +354,74 @@ rcl_interfaces::msg::SetParametersResult RobotStatePublisher::parameterUpdate(
 
   for (const rclcpp::Parameter & parameter : parameters) {
     if (parameter.get_name() == "robot_description") {
+      // First make sure that it is still a string
+      if (parameter.get_type() != rclcpp::ParameterType::PARAMETER_STRING) {
+        result.successful = false;
+        result.reason = "URDF must be a string";
+        break;
+      }
+
+      // Now get the parameter
       std::string new_urdf = parameter.as_string();
-      // Ensure that it isn't empty
+      // And ensure that it isn't empty
       if (new_urdf.empty()) {
         result.successful = false;
         result.reason = "Empty URDF is not allowed";
         break;
       }
 
-      // And that we can successfully parse it
       try {
-        urdf::Model dummy_model;
-        parseURDF(new_urdf, dummy_model);
+        setupURDF(new_urdf);
+        publishFixedTransforms();
       } catch (const std::runtime_error & err) {
         RCLCPP_WARN(get_logger(), "%s", err.what());
         result.successful = false;
         result.reason = err.what();
         break;
       }
+    } else if (parameter.get_name() == "use_tf_static") {
+      if (parameter.get_type() != rclcpp::ParameterType::PARAMETER_BOOL) {
+        result.successful = false;
+        result.reason = "use_tf_static must be a boolean";
+        break;
+      }
+      use_tf_static_ = parameter.as_bool();
+    } else if (parameter.get_name() == "ignore_timestamp") {
+      if (parameter.get_type() != rclcpp::ParameterType::PARAMETER_BOOL) {
+        result.successful = false;
+        result.reason = "ignore_timestamp must be a boolean";
+        break;
+      }
+      ignore_timestamp_ = parameter.as_bool();
     } else if (parameter.get_name() == "publish_frequency") {
+      if (parameter.get_type() != rclcpp::ParameterType::PARAMETER_DOUBLE) {
+        result.successful = false;
+        result.reason = "publish_frequency must be a double";
+        break;
+      }
+
       double publish_freq = parameter.as_double();
       if (publish_freq < 0.0 || publish_freq > 1000.0) {
         result.successful = false;
         result.reason = "publish_frequency must be between 0.0 and 1000.0";
         break;
       }
+      std::chrono::milliseconds new_publish_interval =
+        std::chrono::milliseconds(static_cast<uint64_t>(1000.0 / publish_freq));
+
+      if (new_publish_interval != publish_interval_ms_) {
+        publish_interval_ms_ = new_publish_interval;
+        if (!use_tf_static_) {
+          timer_->cancel();
+          timer_ = this->create_wall_timer(
+            publish_interval_ms_, std::bind(&RobotStatePublisher::publishFixedTransforms, this));
+        }
+      }
     }
   }
 
   return result;
 }
-
-void RobotStatePublisher::onParameterEvent(
-  std::shared_ptr<const rcl_interfaces::msg::ParameterEvent> event)
-{
-  // Filter out events from other nodes
-  if (event->node != this->get_fully_qualified_name()) {
-    return;
-  }
-
-  // Filter for 'robot_description' being changed.
-  rclcpp::ParameterEventsFilter filter(event, {"robot_description"},
-    {rclcpp::ParameterEventsFilter::EventType::CHANGED});
-  for (auto & it : filter.get_events()) {
-    if (it.second->name == "robot_description") {
-      try {
-        setupURDF(it.second->value.string_value);
-        publishFixedTransforms();
-      } catch (const std::runtime_error & err) {
-        RCLCPP_WARN(get_logger(), "Failed to parse new URDF: %s", err.what());
-      }
-    }
-  }
-}
-
 }  // namespace robot_state_publisher
 
 RCLCPP_COMPONENTS_REGISTER_NODE(robot_state_publisher::RobotStatePublisher)
