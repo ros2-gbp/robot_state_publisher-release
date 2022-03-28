@@ -2,23 +2,41 @@
 Changelog for package robot_state_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2.5.3 (2022-02-17)
+3.0.1 (2022-03-28)
 ------------------
-* Publish new fixed transforms when URDF is updated (`#189 <https://github.com/ros/robot_state_publisher/issues/189>`_)
-* Contributors: Chris Lalancette
+* export dependencies, to use robot_state_publisher as a component (`#193 <https://github.com/ros/robot_state_publisher/issues/193>`_)
+* Contributors: Kenji Brameld
 
-2.5.2 (2021-11-30)
+3.0.0 (2022-01-14)
 ------------------
-* Prevent robot_state_publisher from publishing on a timer (`#175 <https://github.com/ros/robot_state_publisher/issues/175>`_)
-* Contributors: Daisuke Nishimatsu
+* Fix include order for cpplint (`#186 <https://github.com/ros/robot_state_publisher/issues/186>`_)
+* Change how parameter updates are handled (`#180 <https://github.com/ros/robot_state_publisher/issues/180>`_)
+* Install includes to instal/${PROJECT_NAME} (`#184 <https://github.com/ros/robot_state_publisher/issues/184>`_)
+* Make the change_fixed_joint test more robust (`#183 <https://github.com/ros/robot_state_publisher/issues/183>`_)
+* Add in a test to make sure fixed transforms change on update
+* Small C++ nice-isms in the tests
+* Switch to using target_include_directories for tests
+* Publish new fixed transforms when URDF is updated
+* Make joint_states subscription QoS configurable; default to SensorDataQoS (`#179 <https://github.com/ros/robot_state_publisher/issues/179>`_)
+* Remove dependency on urdfdom_headers (`#168 <https://github.com/ros/robot_state_publisher/issues/168>`_)
+* Contributors: Anthony Deschamps, Chris Lalancette, Jacob Perron, Russell Joyce, Shane Loretz
 
-2.5.1 (2021-08-04)
+2.7.0 (2021-10-18)
 ------------------
+* Fix deprecated subscriber callbacks (`#173 <https://github.com/ros/robot_state_publisher/issues/173>`_)
+* Contributors: Abrar Rahman Protyasha
 
-2.4.4 (2021-08-02)
+2.6.0 (2021-08-02)
 ------------------
-* Restore tf frame prefix support for ROS 2 (`#159 <https://github.com/ros/robot_state_publisher/issues/159>`_) (`#171 <https://github.com/ros/robot_state_publisher/issues/171>`_)
-* Contributors: Chris Lalancette
+* Cleanup the documentation in the RobotStatePublisher class. (`#172 <https://github.com/ros/robot_state_publisher/issues/172>`_)
+* Always publish fixed frames to /tf_static (`#158 <https://github.com/ros/robot_state_publisher/issues/158>`_)
+* corrected publish_frequency default in README (`#166 <https://github.com/ros/robot_state_publisher/issues/166>`_)
+* Contributors: Chris Lalancette, Jacob Perron, Nils Schulte
+
+2.5.0 (2021-06-11)
+------------------
+* Add tf frame_prefix parameter (`#159 <https://github.com/ros/robot_state_publisher/issues/159>`_)
+* Contributors: Steve Nogar, Chris Lalancette
 
 2.4.3 (2021-04-19)
 ------------------
