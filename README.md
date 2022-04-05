@@ -1,3 +1,26 @@
+## robot_state_publisher (rolling) - 3.0.2-1
+
+The packages in the `robot_state_publisher` repository were released into the `rolling` distro by running `/home/parallels/.local/bin/bloom-release -r rolling robot_state_publisher` on `Tue, 05 Apr 2022 21:32:00 -0000`
+
+The `robot_state_publisher` package was released.
+
+Version of package(s) in repository `robot_state_publisher`:
+
+- upstream repository: https://github.com/ros/robot_state_publisher.git
+- release repository: https://github.com/ros2-gbp/robot_state_publisher-release.git
+- rosdistro version: `3.0.1-1`
+- old version: `3.0.1-1`
+- new version: `3.0.2-1`
+
+Versions of tools used:
+
+- bloom version: `0.10.7`
+- catkin_pkg version: `0.4.24`
+- rosdep version: `0.21.0`
+- rosdistro version: `0.8.3`
+- vcstools version: `0.1.42`
+
+
 ## robot_state_publisher (rolling) - 3.0.1-1
 
 The packages in the `robot_state_publisher` repository were released into the `rolling` distro by running `/usr/bin/bloom-release --track rolling --rosdistro rolling robot_state_publisher` on `Mon, 28 Mar 2022 21:51:24 -0000`
