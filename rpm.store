@@ -1,1 +1,1 @@
-{"base": "d80c3d8", "parent": "rpm/rolling/robot_state_publisher", "previous": "23a3ef4", "trim": "", "trimbase": ""}
+{"base": "10c1f66", "parent": "rpm/humble/robot_state_publisher", "previous": "50f44ec", "trim": "", "trimbase": ""}
