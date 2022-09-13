@@ -2,6 +2,11 @@
 Changelog for package robot_state_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.1.1 (2022-09-13)
+------------------
+* Mirror rolling to ros2
+* Contributors: Audrow Nash
+
 3.1.0 (2022-05-10)
 ------------------
 
