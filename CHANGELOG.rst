@@ -2,10 +2,41 @@
 Changelog for package robot_state_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-3.0.3 (2024-01-24)
+3.3.3 (2024-01-24)
 ------------------
-* Fix reload after a description with a mimic joint (`#212 <https://github.com/ros/robot_state_publisher/issues/212>`_) (`#214 <https://github.com/ros/robot_state_publisher/issues/214>`_)
-* Contributors: mergify[bot]
+* Fix reload after a description with a mimic joint (`#212 <https://github.com/ros/robot_state_publisher/issues/212>`_)
+* Contributors: Guillaume Doisy
+
+3.3.2 (2023-11-06)
+------------------
+* Remove ament_target_dependencies. (`#209 <https://github.com/ros/robot_state_publisher/issues/209>`_)
+* Contributors: Chris Lalancette
+
+3.3.1 (2023-06-07)
+------------------
+* Improve log messages (`#206 <https://github.com/ros/robot_state_publisher/issues/206>`_)
+* Contributors: Nick Lamprianidis
+
+3.3.0 (2023-04-28)
+------------------
+
+3.2.0 (2023-04-11)
+------------------
+* Update robot_state_publisher to C++17. (`#204 <https://github.com/ros/robot_state_publisher/issues/204>`_)
+* Contributors: Chris Lalancette
+
+3.1.2 (2023-02-13)
+------------------
+* [rolling] Update maintainers - 2022-11-07 (`#203 <https://github.com/ros/robot_state_publisher/issues/203>`_)
+* Contributors: Audrow Nash
+
+3.1.1 (2022-09-13)
+------------------
+* Mirror rolling to ros2
+* Contributors: Audrow Nash
+
+3.1.0 (2022-05-10)
+------------------
 
 3.0.2 (2022-04-05)
 ------------------
