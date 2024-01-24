@@ -186,13 +186,19 @@ void RobotStatePublisher::setupURDF(const std::string & urdf_xml)
   mimic_.clear();
   for (const std::pair<const std::string, urdf::JointSharedPtr> & i : model.joints_) {
     if (i.second->mimic) {
-      mimic_.insert(std::make_pair(i.first, i.second->mimic));
+      // Just taking a reference to the model shared pointers ends up in a crash.
+      // Explicitly make a copy of the JointMimic.
+      auto jm = std::make_shared<urdf::JointMimic>();
+      jm->offset = i.second->mimic->offset;
+      jm->multiplier = i.second->mimic->multiplier;
+      jm->joint_name = i.second->mimic->joint_name;
+      mimic_[i.first] = jm;
     }
   }
 
   KDL::SegmentMap segments_map = tree.getSegments();
   for (const std::pair<const std::string, KDL::TreeElement> & segment : segments_map) {
-    RCLCPP_DEBUG(get_logger(), "Got segment %s", segment.first.c_str());
+    RCLCPP_INFO(get_logger(), "got segment %s", segment.first.c_str());
   }
 
   // walk the tree and add segments to segments_
@@ -205,8 +211,6 @@ void RobotStatePublisher::setupURDF(const std::string & urdf_xml)
 
   // Publish the robot description
   description_pub_->publish(std::move(msg));
-
-  RCLCPP_INFO(get_logger(), "Robot initialized");
 }
 
 // add children to correct maps
@@ -224,8 +228,8 @@ void RobotStatePublisher::addChildren(
       if (model.getJoint(child.getJoint().getName()) &&
         model.getJoint(child.getJoint().getName())->type == urdf::Joint::FLOATING)
       {
-        RCLCPP_DEBUG(
-          get_logger(), "Floating joint is not supported; skipping segment from %s to %s.",
+        RCLCPP_INFO(
+          get_logger(), "Floating joint. Not adding segment from %s to %s.",
           root.c_str(), child.getName().c_str());
       } else {
         segments_fixed_.insert(make_pair(child.getJoint().getName(), s));
