@@ -2,6 +2,11 @@
 Changelog for package robot_state_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.4.1 (2024-08-28)
+------------------
+* update urdf model header (`#223 <https://github.com/ros/robot_state_publisher/issues/223>`_)
+* Contributors: Alejandro Hernández Cordero
+
 3.4.0 (2024-04-26)
 ------------------
 
