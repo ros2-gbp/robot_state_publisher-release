@@ -2,6 +2,12 @@
 Changelog for package robot_state_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.4.2 (2024-12-20)
+------------------
+* Use `emplace()` with `std::map`s (`#231 <https://github.com/ros/robot_state_publisher/issues/231>`_)
+* Remove CODEOWNERS and mirror-rolling-to-main workflow (`#229 <https://github.com/ros/robot_state_publisher/issues/229>`_)
+* Contributors: Alejandro Hernández Cordero, Patrick Roncagliolo
+
 3.4.1 (2024-08-28)
 ------------------
 * update urdf model header (`#223 <https://github.com/ros/robot_state_publisher/issues/223>`_)
