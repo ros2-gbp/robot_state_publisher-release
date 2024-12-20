@@ -234,13 +234,13 @@ void RobotStatePublisher::addChildren(
           get_logger(), "Floating joint is not supported; skipping segment from %s to %s.",
           root.c_str(), child.getName().c_str());
       } else {
-        segments_fixed_.insert(make_pair(child.getJoint().getName(), s));
+        segments_fixed_.emplace(child.getJoint().getName(), s);
         RCLCPP_DEBUG(
           get_logger(), "Adding fixed segment from %s to %s", root.c_str(),
           child.getName().c_str());
       }
     } else {
-      segments_.insert(make_pair(child.getJoint().getName(), s));
+      segments_.emplace(child.getJoint().getName(), s);
       RCLCPP_DEBUG(
         get_logger(), "Adding moving segment from %s to %s", root.c_str(),
         child.getName().c_str());
@@ -342,14 +342,14 @@ void RobotStatePublisher::callbackJointState(
     // get joint positions from state message
     std::map<std::string, double> joint_positions;
     for (size_t i = 0; i < state->name.size(); i++) {
-      joint_positions.insert(std::make_pair(state->name[i], state->position[i]));
+      joint_positions.emplace(state->name[i], state->position[i]);
     }
 
     for (const std::pair<const std::string, urdf::JointMimicSharedPtr> & i : mimic_) {
       if (joint_positions.find(i.second->joint_name) != joint_positions.end()) {
         double pos = joint_positions[i.second->joint_name] * i.second->multiplier +
           i.second->offset;
-        joint_positions.insert(std::make_pair(i.first, pos));
+        joint_positions.emplace(i.first, pos);
       }
     }
 
