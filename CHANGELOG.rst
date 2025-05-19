@@ -2,6 +2,11 @@
 Changelog for package robot_state_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.5.1 (2025-05-19)
+------------------
+* Removed deprecated command-line argument (`#233 <https://github.com/ros/robot_state_publisher/issues/233>`_)
+* Contributors: Alejandro Hernández Cordero
+
 3.5.0 (2025-04-25)
 ------------------
 
