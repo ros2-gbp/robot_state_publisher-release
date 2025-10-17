@@ -2,6 +2,16 @@
 Changelog for package robot_state_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.5.3 (2025-10-17)
+------------------
+* Add functionality to read description from a topic instead of a parameter (`#234 <https://github.com/ros/robot_state_publisher/issues/234>`_)
+* Removed tf2_ros warning (`#239 <https://github.com/ros/robot_state_publisher/issues/239>`_)
+* fix cmake deprecation (`#232 <https://github.com/ros/robot_state_publisher/issues/232>`_)
+* Removed tf2_ros warning (`#238 <https://github.com/ros/robot_state_publisher/issues/238>`_)
+* Removed orocos kdl vendor dependency (`#237 <https://github.com/ros/robot_state_publisher/issues/237>`_)
+* Removed warnings in geometry2 (`#236 <https://github.com/ros/robot_state_publisher/issues/236>`_)
+* Contributors: Alejandro Hernández Cordero, Kenji Brameld (TRACLabs), mosfet80
+
 3.5.2 (2025-07-18)
 ------------------
 * Replace deprecated tf2_ros headers (`#235 <https://github.com/ros/robot_state_publisher/issues/235>`_)
