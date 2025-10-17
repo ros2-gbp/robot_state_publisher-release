@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.20)
 project(robot_state_publisher)
 
 # Default to C++17
@@ -109,6 +109,8 @@ if(BUILD_TESTING)
   target_link_libraries(test_change_mimic_joint PRIVATE ${GTEST_LIBRARIES} rclcpp::rclcpp ${rcl_interfaces_TARGETS})
   add_launch_test(test/change_mimic_joint-launch.py
     ARGS "test_exe:=$<TARGET_FILE:test_change_mimic_joint>")
+
+  add_launch_test(test/use_robot_description_topic-launch.py)
 endif()
 
 ament_export_dependencies(
