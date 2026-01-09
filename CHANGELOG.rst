@@ -2,6 +2,11 @@
 Changelog for package robot_state_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.5.4 (2026-01-09)
+------------------
+* Update subscription callback signatures (`#241 <https://github.com/ros/robot_state_publisher/issues/241>`_)
+* Contributors: Maurice Alexander Purnawan
+
 3.5.3 (2025-10-17)
 ------------------
 * Add functionality to read description from a topic instead of a parameter (`#234 <https://github.com/ros/robot_state_publisher/issues/234>`_)
