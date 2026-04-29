@@ -1,0 +1,12 @@
+Source: ros-lyrical-robot-state-publisher
+Section: misc
+Priority: optional
+Maintainer: Chris Lalancette <clalancette@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), liborocos-kdl-dev, ros-lyrical-ament-cmake, ros-lyrical-ament-cmake-gtest <!nocheck>, ros-lyrical-ament-lint-auto <!nocheck>, ros-lyrical-ament-lint-common <!nocheck>, ros-lyrical-builtin-interfaces, ros-lyrical-geometry-msgs, ros-lyrical-kdl-parser, ros-lyrical-launch-ros <!nocheck>, ros-lyrical-launch-testing-ament-cmake <!nocheck>, ros-lyrical-rcl-interfaces, ros-lyrical-rclcpp, ros-lyrical-rclcpp-components, ros-lyrical-sensor-msgs, ros-lyrical-std-msgs, ros-lyrical-tf2-ros, ros-lyrical-tf2-ros-py <!nocheck>, ros-lyrical-urdf, ros-lyrical-ros-workspace
+Homepage: https://index.ros.org/p/robot_state_publisher/#lyrical
+Standards-Version: 3.9.2
+
+Package: ros-lyrical-robot-state-publisher
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, liborocos-kdl-dev, liborocos-kdl1.5, ros-lyrical-builtin-interfaces, ros-lyrical-geometry-msgs, ros-lyrical-kdl-parser, ros-lyrical-rcl-interfaces, ros-lyrical-rclcpp, ros-lyrical-rclcpp-components, ros-lyrical-sensor-msgs, ros-lyrical-std-msgs, ros-lyrical-tf2-ros, ros-lyrical-urdf, ros-lyrical-ros-workspace
+Description: This package take the joint angles of a robot as input, and publishes the 3D poses of the robot links to tf2, using a kinematic tree model of the robot.
