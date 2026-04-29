@@ -1,1 +1,1 @@
-{"base": "e7febe7d79c5", "parent": "debian/rolling/robot_state_publisher", "previous": "bad6c8d7f465", "trim": "", "trimbase": ""}
+{"base": "3624c079447b", "parent": "debian/lyrical/robot_state_publisher", "previous": "0deeb5708cba", "trim": "", "trimbase": ""}
