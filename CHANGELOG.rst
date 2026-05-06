@@ -2,6 +2,9 @@
 Changelog for package robot_state_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.6.0 (2026-05-06)
+------------------
+
 3.5.5 (2026-04-09)
 ------------------
 * Use new ROSIDL aggregate CMake target (`#246 <https://github.com/ros/robot_state_publisher/issues/246>`_)
