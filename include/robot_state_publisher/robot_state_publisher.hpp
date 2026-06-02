@@ -43,14 +43,14 @@
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
 #include "std_msgs/msg/string.hpp"
-#include "tf2_ros/static_transform_broadcaster.hpp"
-#include "tf2_ros/transform_broadcaster.hpp"
-#include "urdf/model.hpp"
+#include "tf2_ros/static_transform_broadcaster.h"
+#include "tf2_ros/transform_broadcaster.h"
+#include "urdf/model.h"
+
+using MimicMap = std::map<std::string, urdf::JointMimicSharedPtr>;
 
 namespace robot_state_publisher
 {
-
-using MimicMap = std::map<std::string, urdf::JointMimicSharedPtr>;
 
 /// A class that represents a mapping between a KDL segment and its root and tip.
 class SegmentPair final
@@ -154,13 +154,6 @@ protected:
   /// A pointer to the ROS 2 publisher for the robot_description
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr description_pub_;
 
-  /// A pointer to the ROS 2 subscription for the robot_description,
-  /// when use_robot_description_topic_ is true
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr description_sub_;
-
-  /// Whether to use the robot_description from a topic instead of a parameter
-  bool use_robot_description_topic_;
-
   /// A pointer to the ROS 2 subscription for the joint states
   rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_state_sub_;
 
@@ -172,15 +165,6 @@ protected:
 
   /// A map of the mimic joints that should be published
   MimicMap mimic_;
-
-  /// Cached value of the publish_frequency parameter
-  double publish_frequency_;
-
-  /// Cached value of the ignore_timestamp parameter
-  bool ignore_timestamp_;
-
-  /// Cached value of the frame_prefix parameter
-  std::string frame_prefix_;
 
   /// The parameter event callback that will be called when a parameter is changed
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_cb_;
