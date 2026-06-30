@@ -2,12 +2,62 @@
 Changelog for package robot_state_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-3.3.4 (2026-06-02)
+3.6.1 (2026-06-30)
 ------------------
-* Remove CODEOWNERS and mirror-rolling-to-main workflow (`#229 <https://github.com/ros/robot_state_publisher/issues/229>`_) (`#230 <https://github.com/ros/robot_state_publisher/issues/230>`_)
-  (cherry picked from commit 34a7b23c15af2d2e4f863d5041c54922aa9bf675)
-  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
-* Contributors: mergify[bot]
+* CPP 20 (`#247 <https://github.com/ros/robot_state_publisher//issues/247>`_)
+* avoiding the incremental vector reallocations (`#248 <https://github.com/ros/robot_state_publisher//issues/248>`_)
+* Contributors: Alejandro Hernández Cordero
+
+3.6.0 (2026-05-06)
+------------------
+
+3.5.5 (2026-04-09)
+------------------
+* Use new ROSIDL aggregate CMake target (`#246 <https://github.com/ros/robot_state_publisher/issues/246>`_)
+* Improvements (`#245 <https://github.com/ros/robot_state_publisher/issues/245>`_)
+* Contributors: Alejandro Hernández Cordero, Emerson Knapp
+
+3.5.4 (2026-01-09)
+------------------
+* Update subscription callback signatures (`#241 <https://github.com/ros/robot_state_publisher/issues/241>`_)
+* Contributors: Maurice Alexander Purnawan
+
+3.5.3 (2025-10-17)
+------------------
+* Add functionality to read description from a topic instead of a parameter (`#234 <https://github.com/ros/robot_state_publisher/issues/234>`_)
+* Removed tf2_ros warning (`#239 <https://github.com/ros/robot_state_publisher/issues/239>`_)
+* fix cmake deprecation (`#232 <https://github.com/ros/robot_state_publisher/issues/232>`_)
+* Removed tf2_ros warning (`#238 <https://github.com/ros/robot_state_publisher/issues/238>`_)
+* Removed orocos kdl vendor dependency (`#237 <https://github.com/ros/robot_state_publisher/issues/237>`_)
+* Removed warnings in geometry2 (`#236 <https://github.com/ros/robot_state_publisher/issues/236>`_)
+* Contributors: Alejandro Hernández Cordero, Kenji Brameld (TRACLabs), mosfet80
+
+3.5.2 (2025-07-18)
+------------------
+* Replace deprecated tf2_ros headers (`#235 <https://github.com/ros/robot_state_publisher/issues/235>`_)
+* Contributors: Alejandro Hernández Cordero
+
+3.5.1 (2025-05-19)
+------------------
+* Removed deprecated command-line argument (`#233 <https://github.com/ros/robot_state_publisher/issues/233>`_)
+* Contributors: Alejandro Hernández Cordero
+
+3.5.0 (2025-04-25)
+------------------
+
+3.4.2 (2024-12-20)
+------------------
+* Use `emplace()` with `std::map`s (`#231 <https://github.com/ros/robot_state_publisher/issues/231>`_)
+* Remove CODEOWNERS and mirror-rolling-to-main workflow (`#229 <https://github.com/ros/robot_state_publisher/issues/229>`_)
+* Contributors: Alejandro Hernández Cordero, Patrick Roncagliolo
+
+3.4.1 (2024-08-28)
+------------------
+* update urdf model header (`#223 <https://github.com/ros/robot_state_publisher/issues/223>`_)
+* Contributors: Alejandro Hernández Cordero
+
+3.4.0 (2024-04-26)
+------------------
 
 3.3.3 (2024-01-24)
 ------------------

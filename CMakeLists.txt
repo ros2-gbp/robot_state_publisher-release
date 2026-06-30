@@ -1,17 +1,14 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.20)
 project(robot_state_publisher)
 
-# Default to C++17
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
-
+# The C++/C standard comes from ament_ros_defaults (cxx_std_20 / c_std_17),
+# linked PRIVATE below so it applies to this package's own translation units.
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra)
 endif()
 
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_ros_core REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(kdl_parser REQUIRED)
@@ -31,19 +28,23 @@ target_include_directories(${PROJECT_NAME}_node PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 target_link_libraries(${PROJECT_NAME}_node PUBLIC
-  ${builtin_interfaces_TARGETS}
+  builtin_interfaces::builtin_interfaces
   orocos-kdl
-  ${rcl_interfaces_TARGETS}
+  rcl_interfaces::rcl_interfaces
   rclcpp::rclcpp
-  ${sensor_msgs_TARGETS}
-  ${std_msgs_TARGETS}
+  sensor_msgs::sensor_msgs
+  std_msgs::std_msgs
   tf2_ros::tf2_ros
   urdf::urdf
 )
 target_link_libraries(${PROJECT_NAME}_node PRIVATE
-  ${geometry_msgs_TARGETS}
+  geometry_msgs::geometry_msgs
   kdl_parser::kdl_parser
   rclcpp_components::component
+  # INTERFACE target providing cxx_std_20 / c_std_17. Linked PRIVATE so the
+  # standard applies to our own sources without leaking into the exported
+  # interface (a SHARED library does not propagate PRIVATE link requirements).
+  ament_cmake_ros_core::ament_ros_defaults
 )
 ament_export_targets(export_${PROJECT_NAME}_node)
 
@@ -89,7 +90,7 @@ if(BUILD_TESTING)
 
   add_executable(test_two_links_moving_joint test/test_two_links_moving_joint.cpp)
   target_include_directories(test_two_links_fixed_joint PRIVATE ${GTEST_INCLUDE_DIRS})
-  target_link_libraries(test_two_links_moving_joint PRIVATE ${GTEST_LIBRARIES} rclcpp::rclcpp ${sensor_msgs_TARGETS} tf2_ros::tf2_ros)
+  target_link_libraries(test_two_links_moving_joint PRIVATE ${GTEST_LIBRARIES} rclcpp::rclcpp sensor_msgs::sensor_msgs tf2_ros::tf2_ros)
   add_launch_test(test/two_links_moving_joint-launch.py
     ARGS "test_exe:=$<TARGET_FILE:test_two_links_moving_joint>")
 
@@ -97,7 +98,7 @@ if(BUILD_TESTING)
   target_include_directories(test_two_links_change_fixed_joint PRIVATE ${GTEST_INCLUDE_DIRS})
   target_link_libraries(test_two_links_change_fixed_joint PRIVATE
     ${GTEST_LIBRARIES}
-    ${rcl_interfaces_TARGETS}
+    rcl_interfaces::rcl_interfaces
     rclcpp::rclcpp
     tf2_ros::tf2_ros
   )
@@ -106,9 +107,11 @@ if(BUILD_TESTING)
 
   add_executable(test_change_mimic_joint test/test_change_mimic_joint.cpp)
   target_include_directories(test_change_mimic_joint PRIVATE ${GTEST_INCLUDE_DIRS})
-  target_link_libraries(test_change_mimic_joint PRIVATE ${GTEST_LIBRARIES} rclcpp::rclcpp ${rcl_interfaces_TARGETS})
+  target_link_libraries(test_change_mimic_joint PRIVATE ${GTEST_LIBRARIES} rclcpp::rclcpp rcl_interfaces::rcl_interfaces)
   add_launch_test(test/change_mimic_joint-launch.py
     ARGS "test_exe:=$<TARGET_FILE:test_change_mimic_joint>")
+
+  add_launch_test(test/use_robot_description_topic-launch.py)
 endif()
 
 ament_export_dependencies(
