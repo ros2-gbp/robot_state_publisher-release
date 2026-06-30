@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>robot_state_publisher</name>
-  <version>3.6.0</version>
+  <version>3.6.1</version>
   <description>
     This package take the joint angles of a robot as input, and publishes the 3D poses of the robot links to tf2, using a kinematic tree model of the robot.
   </description>
@@ -15,6 +15,7 @@
   <author email="sloretz@openrobotics.org">Shane Loretz</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_ros_core</buildtool_depend>
 
   <depend>builtin_interfaces</depend>
   <depend>geometry_msgs</depend>
