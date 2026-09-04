@@ -2,20 +2,11 @@
 Changelog for package robot_state_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-3.6.2 (2026-09-04)
+3.5.6 (2026-09-04)
 ------------------
-* granular rclcpp/rclcpp.hpp and include what you use (`#254 <https://github.com/ros/robot_state_publisher/issues/254>`_)
+* Merge pull request `#252 <https://github.com/ros/robot_state_publisher/issues/252>`_ from ros/mergify/bp/lyrical/pr-251
 * Run tests with RMW isolation
-* Contributors: Alejandro Hernández Cordero, Yadunund Vijay, yadunund
-
-3.6.1 (2026-06-30)
-------------------
-* CPP 20 (`#247 <https://github.com/ros/robot_state_publisher//issues/247>`_)
-* avoiding the incremental vector reallocations (`#248 <https://github.com/ros/robot_state_publisher//issues/248>`_)
-* Contributors: Alejandro Hernández Cordero
-
-3.6.0 (2026-05-06)
-------------------
+* Contributors: Yadunund Vijay, yadunund
 
 3.5.5 (2026-04-09)
 ------------------

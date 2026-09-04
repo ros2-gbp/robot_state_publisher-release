@@ -34,10 +34,7 @@
 #include "gtest/gtest.h"
 
 #include "rcl_interfaces/msg/set_parameters_result.hpp"
-#include "rclcpp/node.hpp"
-#include "rclcpp/parameter.hpp"
-#include "rclcpp/parameter_client.hpp"
-#include "rclcpp/utilities.hpp"
+#include "rclcpp/rclcpp.hpp"
 
 TEST(test_publisher, test_two_joints)
 {

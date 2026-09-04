@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.20)
 project(robot_state_publisher)
 
-# The C++/C standard comes from ament_ros_defaults (cxx_std_20 / c_std_17),
-# linked PRIVATE below so it applies to this package's own translation units.
+# Default to C++17
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra)
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(ament_cmake_ros_core REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(kdl_parser REQUIRED)
@@ -41,10 +44,6 @@ target_link_libraries(${PROJECT_NAME}_node PRIVATE
   geometry_msgs::geometry_msgs
   kdl_parser::kdl_parser
   rclcpp_components::component
-  # INTERFACE target providing cxx_std_20 / c_std_17. Linked PRIVATE so the
-  # standard applies to our own sources without leaking into the exported
-  # interface (a SHARED library does not propagate PRIVATE link requirements).
-  ament_cmake_ros_core::ament_ros_defaults
 )
 ament_export_targets(export_${PROJECT_NAME}_node)
 
@@ -78,35 +77,19 @@ if(BUILD_TESTING)
 
   add_executable(test_two_links_fixed_joint test/test_two_links_fixed_joint.cpp)
   target_include_directories(test_two_links_fixed_joint PRIVATE ${GTEST_INCLUDE_DIRS})
-  target_link_libraries(test_two_links_fixed_joint PRIVATE
-    ${GTEST_LIBRARIES}
-    geometry_msgs::geometry_msgs
-    rclcpp::rclcpp
-    tf2_ros::tf2_ros
-  )
+  target_link_libraries(test_two_links_fixed_joint PRIVATE ${GTEST_LIBRARIES} rclcpp::rclcpp tf2_ros::tf2_ros)
   add_launch_test(test/two_links_fixed_joint-launch.py
     ARGS "test_exe:=$<TARGET_FILE:test_two_links_fixed_joint>")
 
   add_executable(test_two_links_fixed_joint_prefix test/test_two_links_fixed_joint_prefix.cpp)
-  target_include_directories(test_two_links_fixed_joint_prefix PRIVATE ${GTEST_INCLUDE_DIRS})
-  target_link_libraries(test_two_links_fixed_joint_prefix PRIVATE
-    ${GTEST_LIBRARIES}
-    geometry_msgs::geometry_msgs
-    rclcpp::rclcpp
-    tf2_ros::tf2_ros
-  )
+  target_include_directories(test_two_links_fixed_joint PRIVATE ${GTEST_INCLUDE_DIRS})
+  target_link_libraries(test_two_links_fixed_joint_prefix PRIVATE ${GTEST_LIBRARIES} rclcpp::rclcpp tf2_ros::tf2_ros)
   add_launch_test(test/two_links_fixed_joint_prefix-launch.py
     ARGS "test_exe:=$<TARGET_FILE:test_two_links_fixed_joint_prefix>")
 
   add_executable(test_two_links_moving_joint test/test_two_links_moving_joint.cpp)
-  target_include_directories(test_two_links_moving_joint PRIVATE ${GTEST_INCLUDE_DIRS})
-  target_link_libraries(test_two_links_moving_joint PRIVATE
-    ${GTEST_LIBRARIES}
-    geometry_msgs::geometry_msgs
-    rclcpp::rclcpp
-    sensor_msgs::sensor_msgs
-    tf2_ros::tf2_ros
-  )
+  target_include_directories(test_two_links_fixed_joint PRIVATE ${GTEST_INCLUDE_DIRS})
+  target_link_libraries(test_two_links_moving_joint PRIVATE ${GTEST_LIBRARIES} rclcpp::rclcpp sensor_msgs::sensor_msgs tf2_ros::tf2_ros)
   add_launch_test(test/two_links_moving_joint-launch.py
     ARGS "test_exe:=$<TARGET_FILE:test_two_links_moving_joint>")
 
@@ -114,7 +97,6 @@ if(BUILD_TESTING)
   target_include_directories(test_two_links_change_fixed_joint PRIVATE ${GTEST_INCLUDE_DIRS})
   target_link_libraries(test_two_links_change_fixed_joint PRIVATE
     ${GTEST_LIBRARIES}
-    geometry_msgs::geometry_msgs
     rcl_interfaces::rcl_interfaces
     rclcpp::rclcpp
     tf2_ros::tf2_ros

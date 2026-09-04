@@ -35,14 +35,8 @@
 
 #include "gtest/gtest.h"
 
-#include "geometry_msgs/msg/transform_stamped.hpp"
 #include "rcl_interfaces/msg/set_parameters_result.hpp"
-#include "rclcpp/clock.hpp"
-#include "rclcpp/node.hpp"
-#include "rclcpp/parameter.hpp"
-#include "rclcpp/parameter_client.hpp"
-#include "rclcpp/time.hpp"
-#include "rclcpp/utilities.hpp"
+#include "rclcpp/rclcpp.hpp"
 #include "tf2_ros/buffer.hpp"
 #include "tf2_ros/transform_listener.hpp"
 

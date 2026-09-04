@@ -39,12 +39,7 @@
 
 #include "gtest/gtest.h"
 
-#include "geometry_msgs/msg/transform_stamped.hpp"
-#include "rclcpp/clock.hpp"
-#include "rclcpp/node.hpp"
-#include "rclcpp/publisher.hpp"
-#include "rclcpp/time.hpp"
-#include "rclcpp/utilities.hpp"
+#include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
 #include "tf2_ros/buffer.hpp"
 #include "tf2_ros/transform_listener.hpp"

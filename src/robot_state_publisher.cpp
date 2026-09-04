@@ -31,9 +31,8 @@
 #include "robot_state_publisher/robot_state_publisher.hpp"
 
 #include <chrono>
-#include <cstddef>
-#include <cstdint>
-#include <exception>
+#include <fstream>
+#include <functional>
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -43,32 +42,15 @@
 
 #include "builtin_interfaces/msg/time.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
-#include "kdl/frames.hpp"
-#include "kdl/joint.hpp"
-#include "kdl/segment.hpp"
 #include "kdl/tree.hpp"
 #include "kdl_parser/kdl_parser.hpp"
 #include "rcl_interfaces/msg/parameter_event.hpp"
 #include "rcl_interfaces/msg/set_parameters_result.hpp"
-#include "rclcpp/duration.hpp"
-#include "rclcpp/logging.hpp"
-#include "rclcpp/node.hpp"
-#include "rclcpp/node_interfaces/node_parameters_interface.hpp"
-#include "rclcpp/node_options.hpp"
-#include "rclcpp/parameter.hpp"
-#include "rclcpp/parameter_client.hpp"
 #include "rclcpp/parameter_events_filter.hpp"
-#include "rclcpp/publisher.hpp"
-#include "rclcpp/qos.hpp"
-#include "rclcpp/qos_overriding_options.hpp"
-#include "rclcpp/subscription.hpp"
-#include "rclcpp/subscription_options.hpp"
-#include "rclcpp/time.hpp"
+#include "rclcpp/rclcpp.hpp"
 #include "rclcpp_components/register_node_macro.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
 #include "std_msgs/msg/string.hpp"
-#include "tf2_ros/static_transform_broadcaster.hpp"
-#include "tf2_ros/transform_broadcaster.hpp"
 #include "urdf/model.hpp"
 
 namespace robot_state_publisher
@@ -77,7 +59,7 @@ namespace robot_state_publisher
 namespace
 {
 
-constexpr bool check_valid_pub_freq(double val)
+inline bool check_valid_pub_freq(double val)
 {
   return val > 0.0 && val <= 1000.0;
 }
@@ -132,15 +114,11 @@ RobotStatePublisher::RobotStatePublisher(const rclcpp::NodeOptions & options)
     // Now that we have successfully declared the parameters and done all
     // necessary setup, install the callback for updating parameters.
     param_cb_ = add_on_set_parameters_callback(
-      [this](const std::vector<rclcpp::Parameter> & parameters) {
-        return parameterUpdate(parameters);
-      });
+      std::bind(&RobotStatePublisher::parameterUpdate, this, std::placeholders::_1));
 
     parameter_subscription_ = rclcpp::AsyncParametersClient::on_parameter_event(
       this->get_node_topics_interface(),
-      [this](rcl_interfaces::msg::ParameterEvent::ConstSharedPtr event) {
-        onParameterEvent(event);
-      });
+      std::bind(&RobotStatePublisher::onParameterEvent, this, std::placeholders::_1));
   }
 
   // set publish frequency
@@ -166,9 +144,7 @@ RobotStatePublisher::RobotStatePublisher(const rclcpp::NodeOptions & options)
   joint_state_sub_ = this->create_subscription<sensor_msgs::msg::JointState>(
     "joint_states",
     rclcpp::SensorDataQoS(),
-    [this](sensor_msgs::msg::JointState::ConstSharedPtr state) {
-      callbackJointState(state);
-    },
+    std::bind(&RobotStatePublisher::callbackJointState, this, std::placeholders::_1),
     subscriber_options);
 
   publishFixedTransforms();
@@ -197,21 +173,21 @@ void RobotStatePublisher::setupURDF(const std::string & urdf_xml)
 
   // Initialize the mimic map
   mimic_.clear();
-  for (const auto & [joint_name, joint] : model.joints_) {
-    if (joint->mimic) {
+  for (const std::pair<const std::string, urdf::JointSharedPtr> & i : model.joints_) {
+    if (i.second->mimic) {
       // Just taking a reference to the model shared pointers ends up in a crash.
       // Explicitly make a copy of the JointMimic.
       auto jm = std::make_shared<urdf::JointMimic>();
-      jm->offset = joint->mimic->offset;
-      jm->multiplier = joint->mimic->multiplier;
-      jm->joint_name = joint->mimic->joint_name;
-      mimic_[joint_name] = jm;
+      jm->offset = i.second->mimic->offset;
+      jm->multiplier = i.second->mimic->multiplier;
+      jm->joint_name = i.second->mimic->joint_name;
+      mimic_[i.first] = jm;
     }
   }
 
   const KDL::SegmentMap & segments_map = tree.getSegments();
-  for (const auto & [segment_name, element] : segments_map) {
-    RCLCPP_DEBUG(get_logger(), "Got segment %s", segment_name.c_str());
+  for (const std::pair<const std::string, KDL::TreeElement> & segment : segments_map) {
+    RCLCPP_DEBUG(get_logger(), "Got segment %s", segment.first.c_str());
   }
 
   // walk the tree and add segments to segments_
@@ -274,15 +250,13 @@ void RobotStatePublisher::publishTransforms(
   const std::string & frame_prefix = frame_prefix_;
 
   std::vector<geometry_msgs::msg::TransformStamped> tf_transforms;
-  // Upper bound: at most one transform per incoming joint position.
-  tf_transforms.reserve(joint_positions.size());
 
   // loop over all joints
-  for (const auto & [joint_name, position] : joint_positions) {
-    auto seg = segments_.find(joint_name);
+  for (const std::pair<const std::string, double> & jnt : joint_positions) {
+    std::map<std::string, SegmentPair>::iterator seg = segments_.find(jnt.first);
     if (seg != segments_.end()) {
       geometry_msgs::msg::TransformStamped tf_transform =
-        kdlToTransform(seg->second.segment.pose(position));
+        kdlToTransform(seg->second.segment.pose(jnt.second));
       tf_transform.header.stamp = time;
       tf_transform.header.frame_id = frame_prefix + seg->second.root;
       tf_transform.child_frame_id = frame_prefix + seg->second.tip;
@@ -300,17 +274,15 @@ void RobotStatePublisher::publishFixedTransforms()
   const std::string & frame_prefix = frame_prefix_;
 
   std::vector<geometry_msgs::msg::TransformStamped> tf_transforms;
-  // Exactly one transform per fixed segment.
-  tf_transforms.reserve(segments_fixed_.size());
 
   // loop over all fixed segments
   rclcpp::Time now = this->now();
-  for (const auto & [joint_name, seg] : segments_fixed_) {
-    geometry_msgs::msg::TransformStamped tf_transform = kdlToTransform(seg.segment.pose(0));
+  for (const std::pair<const std::string, SegmentPair> & seg : segments_fixed_) {
+    geometry_msgs::msg::TransformStamped tf_transform = kdlToTransform(seg.second.segment.pose(0));
     tf_transform.header.stamp = now;
 
-    tf_transform.header.frame_id = frame_prefix + seg.root;
-    tf_transform.child_frame_id = frame_prefix + seg.tip;
+    tf_transform.header.frame_id = frame_prefix + seg.second.root;
+    tf_transform.child_frame_id = frame_prefix + seg.second.tip;
     tf_transforms.push_back(tf_transform);
   }
   static_tf_broadcaster_->sendTransform(tf_transforms);
@@ -321,10 +293,9 @@ void RobotStatePublisher::callbackJointState(
 {
   if (state->name.size() != state->position.size()) {
     if (state->position.empty()) {
-      const char * first_joint = state->name.empty() ? "<none>" : state->name[0].c_str();
       RCLCPP_WARN(
         get_logger(), "Robot state publisher ignored a JointState message about joint(s) "
-        "\"%s\"(,...) whose position member was empty.", first_joint);
+        "\"%s\"(,...) whose position member was empty.", state->name[0].c_str());
     } else {
       RCLCPP_ERROR(get_logger(), "Robot state publisher ignored an invalid JointState message");
     }
@@ -364,10 +335,11 @@ void RobotStatePublisher::callbackJointState(
       joint_positions.emplace(state->name[i], state->position[i]);
     }
 
-    for (const auto & [mimic_name, mimic] : mimic_) {
-      if (auto it = joint_positions.find(mimic->joint_name); it != joint_positions.end()) {
-        const double pos = it->second * mimic->multiplier + mimic->offset;
-        joint_positions.emplace(mimic_name, pos);
+    for (const std::pair<const std::string, urdf::JointMimicSharedPtr> & i : mimic_) {
+      if (joint_positions.find(i.second->joint_name) != joint_positions.end()) {
+        double pos = joint_positions[i.second->joint_name] * i.second->multiplier +
+          i.second->offset;
+        joint_positions.emplace(i.first, pos);
       }
     }
 
