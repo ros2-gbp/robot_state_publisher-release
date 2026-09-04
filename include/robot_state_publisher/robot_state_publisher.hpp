@@ -43,14 +43,14 @@
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
 #include "std_msgs/msg/string.hpp"
-#include "tf2_ros/static_transform_broadcaster.hpp"
-#include "tf2_ros/transform_broadcaster.hpp"
+#include "tf2_ros/static_transform_broadcaster.h"
+#include "tf2_ros/transform_broadcaster.h"
 #include "urdf/model.hpp"
+
+using MimicMap = std::map<std::string, urdf::JointMimicSharedPtr>;
 
 namespace robot_state_publisher
 {
-
-using MimicMap = std::map<std::string, urdf::JointMimicSharedPtr>;
 
 /// A class that represents a mapping between a KDL segment and its root and tip.
 class SegmentPair final
@@ -172,15 +172,6 @@ protected:
 
   /// A map of the mimic joints that should be published
   MimicMap mimic_;
-
-  /// Cached value of the publish_frequency parameter
-  double publish_frequency_;
-
-  /// Cached value of the ignore_timestamp parameter
-  bool ignore_timestamp_;
-
-  /// Cached value of the frame_prefix parameter
-  std::string frame_prefix_;
 
   /// The parameter event callback that will be called when a parameter is changed
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_cb_;
