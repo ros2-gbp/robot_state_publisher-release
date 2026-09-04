@@ -1,3 +1,26 @@
+## robot_state_publisher (lyrical) - 3.5.6-1
+
+The packages in the `robot_state_publisher` repository were released into the `lyrical` distro by running `/usr/bin/bloom-release --rosdistro lyrical --track lyrical robot_state_publisher` on `Fri, 04 Sep 2026 11:00:36 -0000`
+
+The `robot_state_publisher` package was released.
+
+Version of package(s) in repository `robot_state_publisher`:
+
+- upstream repository: https://github.com/ros/robot_state_publisher.git
+- release repository: https://github.com/ros2-gbp/robot_state_publisher-release.git
+- rosdistro version: `3.5.5-3`
+- old version: `3.5.5-3`
+- new version: `3.5.6-1`
+
+Versions of tools used:
+
+- bloom version: `0.14.3`
+- catkin_pkg version: `1.1.0`
+- rosdep version: `0.26.0`
+- rosdistro version: `1.1.0`
+- vcstools version: `0.1.42`
+
+
 ## robot_state_publisher (rolling) - 3.6.2-1
 
 The packages in the `robot_state_publisher` repository were released into the `rolling` distro by running `/usr/bin/bloom-release --rosdistro rolling --track rolling robot_state_publisher` on `Fri, 04 Sep 2026 10:44:50 -0000`
