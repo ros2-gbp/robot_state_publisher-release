@@ -39,10 +39,15 @@
 
 #include "gtest/gtest.h"
 
-#include "rclcpp/rclcpp.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "rclcpp/clock.hpp"
+#include "rclcpp/node.hpp"
+#include "rclcpp/publisher.hpp"
+#include "rclcpp/time.hpp"
+#include "rclcpp/utilities.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
-#include "tf2_ros/buffer.h"
-#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/buffer.hpp"
+#include "tf2_ros/transform_listener.hpp"
 
 static constexpr double EPS = 0.01;
 
@@ -52,7 +57,7 @@ TEST(test_publisher, test_two_joints)
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
   tf2_ros::Buffer buffer(clock);
-  tf2_ros::TransformListener tfl(buffer, node, true);
+  tf2_ros::TransformListener tfl(buffer, *node, true);
 
   rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr pub =
     node->create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);

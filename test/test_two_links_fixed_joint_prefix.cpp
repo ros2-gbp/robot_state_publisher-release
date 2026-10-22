@@ -27,15 +27,18 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 #include <chrono>
-#include <cmath>
 #include <memory>
 #include <thread>
 
 #include "gtest/gtest.h"
 
-#include "rclcpp/rclcpp.hpp"
-#include "tf2_ros/buffer.h"
-#include "tf2_ros/transform_listener.h"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "rclcpp/clock.hpp"
+#include "rclcpp/node.hpp"
+#include "rclcpp/time.hpp"
+#include "rclcpp/utilities.hpp"
+#include "tf2_ros/buffer.hpp"
+#include "tf2_ros/transform_listener.hpp"
 
 #define EPS 0.01
 
@@ -45,7 +48,7 @@ TEST(test_publisher, test_two_links_fixed_joint_prefix)
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
   tf2_ros::Buffer buffer(clock);
-  tf2_ros::TransformListener tfl(buffer, node, true);
+  tf2_ros::TransformListener tfl(buffer, *node, true);
 
   for (unsigned int i = 0;
     i < 100 && !buffer.canTransform("my_prefix/link1", "my_prefix/link2", rclcpp::Time()); i++)

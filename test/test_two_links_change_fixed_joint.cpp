@@ -35,10 +35,16 @@
 
 #include "gtest/gtest.h"
 
+#include "geometry_msgs/msg/transform_stamped.hpp"
 #include "rcl_interfaces/msg/set_parameters_result.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "tf2_ros/buffer.h"
-#include "tf2_ros/transform_listener.h"
+#include "rclcpp/clock.hpp"
+#include "rclcpp/node.hpp"
+#include "rclcpp/parameter.hpp"
+#include "rclcpp/parameter_client.hpp"
+#include "rclcpp/time.hpp"
+#include "rclcpp/utilities.hpp"
+#include "tf2_ros/buffer.hpp"
+#include "tf2_ros/transform_listener.hpp"
 
 static constexpr double EPS = 0.01;
 
@@ -48,7 +54,7 @@ TEST(test_publisher, test_two_joints)
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
   tf2_ros::Buffer buffer(clock);
-  tf2_ros::TransformListener tfl(buffer, node, true);
+  tf2_ros::TransformListener tfl(buffer, *node, true);
   unsigned int i;
 
   for (i = 0; i < 100 && !buffer.canTransform("link1", "link2", rclcpp::Time()); ++i) {

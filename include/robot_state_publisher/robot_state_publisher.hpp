@@ -37,20 +37,27 @@
 #include <vector>
 
 #include "builtin_interfaces/msg/time.hpp"
+#include "kdl/segment.hpp"
 #include "kdl/tree.hpp"
 #include "rcl_interfaces/msg/parameter_event.hpp"
 #include "rcl_interfaces/msg/set_parameters_result.hpp"
-#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/node.hpp"
+#include "rclcpp/node_interfaces/node_parameters_interface.hpp"
+#include "rclcpp/node_options.hpp"
+#include "rclcpp/parameter.hpp"
+#include "rclcpp/publisher.hpp"
+#include "rclcpp/subscription.hpp"
+#include "rclcpp/time.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
 #include "std_msgs/msg/string.hpp"
-#include "tf2_ros/static_transform_broadcaster.h"
-#include "tf2_ros/transform_broadcaster.h"
+#include "tf2_ros/static_transform_broadcaster.hpp"
+#include "tf2_ros/transform_broadcaster.hpp"
 #include "urdf/model.hpp"
-
-using MimicMap = std::map<std::string, urdf::JointMimicSharedPtr>;
 
 namespace robot_state_publisher
 {
+
+using MimicMap = std::map<std::string, urdf::JointMimicSharedPtr>;
 
 /// A class that represents a mapping between a KDL segment and its root and tip.
 class SegmentPair final
@@ -172,6 +179,15 @@ protected:
 
   /// A map of the mimic joints that should be published
   MimicMap mimic_;
+
+  /// Cached value of the publish_frequency parameter
+  double publish_frequency_;
+
+  /// Cached value of the ignore_timestamp parameter
+  bool ignore_timestamp_;
+
+  /// Cached value of the frame_prefix parameter
+  std::string frame_prefix_;
 
   /// The parameter event callback that will be called when a parameter is changed
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_cb_;
